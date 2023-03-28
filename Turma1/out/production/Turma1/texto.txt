@@ -1,0 +1,14 @@
+x
+//batata
+salario
+b
+c
+1/3
+a != b
+s >= c
+g <=  d
+h == k
+h = 110
+g = 789.909
+
+"abcdefg\n"

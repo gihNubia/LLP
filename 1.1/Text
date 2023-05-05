@@ -1,5 +1,8 @@
-let a = 20;
-while (a > 6){
-    a = a - 2;
-    debug a;
-}
+let a = { be : 22 , uc : 12, li : "ssa"};
+let b = [1, 7, 0];
+b[1] = 6;
+debug b[1];
+a["be"] = 7;
+debug a;
+debug a["be"];
+debug a.uc;

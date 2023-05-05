@@ -20,15 +20,11 @@ public class Interpreter {
     }
 
     public static void interpret(Expr expr) {
-        if (expr == null) {
-            System.out.println("error");
-        } else {
-            Value<?> v = expr.expr();
-            if (v == null)
-                System.out.println("undefined");
-            else
-                System.out.println(v);
-        }
+        Value<?> v = expr.expr();
+        if (v == null)
+            System.out.println("undefined");
+        else
+            System.out.println(v);
     }
 
 }

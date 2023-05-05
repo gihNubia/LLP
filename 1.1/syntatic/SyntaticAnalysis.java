@@ -1,67 +1,22 @@
 package syntatic;
 
-import static lexical.Token.Type.ADD;
-import static lexical.Token.Type.AND;
-import static lexical.Token.Type.ASSIGN;
-import static lexical.Token.Type.CLOSE_BRA;
-import static lexical.Token.Type.CLOSE_CUR;
-import static lexical.Token.Type.CLOSE_PAR;
-import static lexical.Token.Type.COLON;
-import static lexical.Token.Type.COMMA;
-import static lexical.Token.Type.CONST;
-import static lexical.Token.Type.DEBUG;
-import static lexical.Token.Type.DEC;
-import static lexical.Token.Type.DIV;
-import static lexical.Token.Type.ELSE;
-import static lexical.Token.Type.END_OF_FILE;
-import static lexical.Token.Type.FALSE;
-import static lexical.Token.Type.FOR;
-import static lexical.Token.Type.FUNCTION;
-import static lexical.Token.Type.IF;
-import static lexical.Token.Type.IN;
-import static lexical.Token.Type.INC;
-import static lexical.Token.Type.LET;
-import static lexical.Token.Type.MUL;
-import static lexical.Token.Type.NAME;
-import static lexical.Token.Type.NOT;
-import static lexical.Token.Type.NUMBER;
-import static lexical.Token.Type.OPEN_BRA;
-import static lexical.Token.Type.OPEN_CUR;
-import static lexical.Token.Type.OPEN_PAR;
-import static lexical.Token.Type.OR;
-import static lexical.Token.Type.RETURN;
-import static lexical.Token.Type.SEMICOLON;
-import static lexical.Token.Type.SUB;
-import static lexical.Token.Type.TEXT;
-import static lexical.Token.Type.TRUE;
-import static lexical.Token.Type.UNDEFINED;
-import static lexical.Token.Type.WHILE;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import interpreter.Environment;
 import interpreter.Interpreter;
 import interpreter.InterpreterException;
-import interpreter.command.AssignCommand;
-import interpreter.command.BlocksCommand;
-import interpreter.command.Command;
-import interpreter.command.DebugCommand;
-import interpreter.command.InitializeCommand;
-import interpreter.command.WhileCommand;
-import interpreter.expr.BinaryExpr;
-import interpreter.expr.ConstExpr;
-import interpreter.expr.Expr;
-import interpreter.expr.FunctionCallExpr;
-import interpreter.expr.SetExpr;
-import interpreter.expr.UnaryExpr;
-import interpreter.expr.Variable;
+import interpreter.command.*;
+import interpreter.expr.*;
 import interpreter.function.StandardFunction;
 import interpreter.value.BoolValue;
 import interpreter.value.FunctionValue;
+import interpreter.value.TextValue;
 import interpreter.value.Value;
 import lexical.LexicalAnalysis;
 import lexical.Token;
+
+import static lexical.Token.Type.*;
 
 public class SyntaticAnalysis {
 
@@ -79,13 +34,13 @@ public class SyntaticAnalysis {
 
     public Command process() {
         Command cmd = procCode();
+        // Expr expr = procExpr();
         eat(END_OF_FILE);
-
         return cmd;
     }
 
     private void advance() {
-        // System.out.println("Found " + current);
+        System.out.println("Found " + current);
         previous = current;
         current = lex.nextToken();
     }
@@ -94,7 +49,7 @@ public class SyntaticAnalysis {
         if (type == current.type) {
             advance();
         } else {
-            // System.out.println("Expected (..., " + type + ", ..., ...), found " + current);
+            System.out.println("Expected (..., " + type + ", ..., ...), found " + current);
             reportError();
         }
     }
@@ -148,7 +103,8 @@ public class SyntaticAnalysis {
             cmds.add(cmd);
         }
 
-        return new BlocksCommand(line, cmds);
+        BlocksCommand bcmds = new BlocksCommand(line, cmds);
+        return bcmds;
     }
 
     // <cmd> ::= <block> | <decl> | <debug> | <if> | <while> | <for> | <assign>
@@ -161,11 +117,11 @@ public class SyntaticAnalysis {
         } else if (check(DEBUG)) {
             cmd = procDebug();
         } else if (check(IF)) {
-            procIf();
+            cmd = procIf();
         } else if (check(WHILE)) {
             cmd = procWhile();
         } else if (check(FOR)) {
-            procFor();
+            cmd = procFor();
         } else {
             cmd = procAssign();
         }
@@ -176,17 +132,16 @@ public class SyntaticAnalysis {
     // <block> ::= '{' <code> '}'
     private BlocksCommand procBlock() {
         eat(OPEN_CUR);
-
         Environment old = this.environment;
         this.environment = new Environment(old);
-
+        
         BlocksCommand bcmds = null;
+
         try {
             bcmds = procCode();
         } finally {
             this.environment = old;
         }
-
         eat(CLOSE_CUR);
 
         return bcmds;
@@ -201,13 +156,11 @@ public class SyntaticAnalysis {
             reportError();
         }
         int line = previous.line;
-        
+
         Token name = procName();
         Variable var = this.environment.declare(name, constant);
 
-        Expr expr = match(ASSIGN) ?
-            procExpr() : new ConstExpr(name.line, null);
-
+        Expr expr = match(ASSIGN) ? procExpr() : new ConstExpr(name.line, null);
         InitializeCommand icmd = new InitializeCommand(name.line, var, expr);
 
         List<Command> cmds = new ArrayList<Command>();
@@ -217,9 +170,7 @@ public class SyntaticAnalysis {
             name = procName();
             var = this.environment.declare(name, constant);
 
-            expr = match(ASSIGN) ?
-                procExpr() : new ConstExpr(name.line, null);
-
+            expr = match(ASSIGN) ? procExpr() : new ConstExpr(name.line, null);
             icmd = new InitializeCommand(name.line, var, expr);
             cmds.add(icmd);
         }
@@ -234,7 +185,7 @@ public class SyntaticAnalysis {
     private DebugCommand procDebug() {
         eat(DEBUG);
         int line = previous.line;
-
+    
         Expr expr = procExpr();
         eat(SEMICOLON);
 
@@ -242,15 +193,24 @@ public class SyntaticAnalysis {
     }
 
     // <if> ::= if '(' <expr> ')' <cmd> [ else <cmd> ]
-    private void procIf() {
+    private IfCommand procIf() { //*****
         eat(IF);
+        int line = previous.line;
+
         eat(OPEN_PAR);
-        procExpr();
+        Expr expr = procExpr();
+
+
         eat(CLOSE_PAR);
-        procCmd();
+        Command thenCmds = procCmd();
+        Command elseCmds = null;
+
         if (match(ELSE)) {
-            procCmd();
+            elseCmds = procCmd();
         }
+
+        IfCommand ifcmd = new IfCommand(line, expr, thenCmds, elseCmds);
+        return ifcmd;
     }
 
     // <while> ::= while '(' <expr> ')' <cmd>
@@ -268,17 +228,28 @@ public class SyntaticAnalysis {
     }
 
     // <for> ::= for '(' [ let ] <name> in <expr> ')' <cmd>
-    private void procFor() {
+    private ForCommand procFor() {
         eat(FOR);
+        int line = previous.line;
+        Token name;
+        Variable var = null;
         eat(OPEN_PAR);
         if (match(LET)) {
-            // fazer nada
+            name = procName();
+            var = this.environment.declare(name, false);
         }
-        procName();
+        else{
+            name = procName();
+            var = this.environment.get(name);
+        }
+
         eat(IN);
-        procExpr();
+        Expr expr = procExpr();
         eat(CLOSE_PAR);
-        procCmd();
+        Command cmds = procCmd();
+
+        ForCommand fcmd = new ForCommand(line, var, expr, cmds);
+        return fcmd;
     }
 
     // <assign> ::= [ <expr> '=' ] <expr> ';'
@@ -302,37 +273,88 @@ public class SyntaticAnalysis {
     }
 
     // <expr> ::= <cond> [ '?' <expr> ':' <expr> ]
-    private Expr procExpr() {
+    private Expr procExpr() { // feito -- falta testar
         Expr expr = procCond();
 
-        // TODO: fazer o resto.
-
-        return expr;
-    }
-
-    // <cond> ::= <rel> { ( '&&' | '||' ) <rel> }
-    private Expr procCond() {
-        Expr expr = procRel();
-        while (match(AND, OR)) {
-            // TODO: Me implementar.
-            procRel();
+        if(match(TERNARY)){
+            procExpr();
+            eat(COLON);
+            procExpr();
         }
 
         return expr;
     }
 
+    // <cond> ::= <rel> { ( '&&' | '||' ) <rel> }
+    private Expr procCond() {  // e da esquer pra direita ou da direita pra esquerda????
+        Expr left = procRel();
+        while (match(AND, OR)) {
+            BinaryExpr.Op op;
+            switch (previous.type) {
+                case AND:
+                    op = BinaryExpr.Op.And;
+                    break;
+                case OR:
+                default:
+                    op = BinaryExpr.Op.Or;
+                    break;
+            }
+
+            int line = previous.line;
+
+            Expr right = procRel();
+
+            left = new BinaryExpr(line, left, op, right);
+
+        }
+
+        return left;
+    }
+
     // <rel> ::= <arith> [ ( '<' | '>' | '<=' | '>=' | '==' | '!=' ) <arith> ]
-    private Expr procRel() {
-        Expr expr = procArith();
+    private Expr procRel() { // feito -- falta testar -- duvidas
+        Expr left = procArith();
 
-        // TODO: fazer o resto.
+        if(match(LOWER_THAN, GREATER_THAN, LOWER_EQUAL, GREATER_EQUAL, EQUALS, NOT_EQUALS)){
 
-        return expr;
+            BinaryExpr.Op op;
+            switch (previous.type) {
+                case LOWER_THAN:
+                    op = BinaryExpr.Op.LowerThan;
+                    break;
+                case GREATER_THAN:
+                    op = BinaryExpr.Op.GreaterThan;
+                    break;
+                case LOWER_EQUAL:
+                    op = BinaryExpr.Op.LowerEqual;
+                    break;
+                case  GREATER_EQUAL:
+                    op = BinaryExpr.Op.GreaterEqual;
+                    break;
+                case  EQUALS:
+                    op = BinaryExpr.Op.Equal;
+                    break;
+                case  NOT_EQUALS:
+                default:
+                    op = BinaryExpr.Op.NotEqual;
+                    break;
+            }
+
+            int line = previous.line;
+
+            Expr right = procArith();
+
+            left = new BinaryExpr(line, left, op, right);
+        }
+
+
+        return left;
     }
 
     // <arith> ::= <term> { ( '+' | '-' ) <term> }
     private Expr procArith() {
         Expr left = procTerm();
+
         while (match(ADD, SUB)) {
             BinaryExpr.Op op;
             switch (previous.type) {
@@ -394,13 +416,13 @@ public class SyntaticAnalysis {
             UnaryExpr.Op op;
             switch (token.type) {
                 case NOT:
-                    op = UnaryExpr.Op.Not;
+                    op = UnaryExpr.Op.NotOp;
                     break;
                 case ADD:
-                    op = UnaryExpr.Op.Pos;
+                    op = UnaryExpr.Op.PosOp;
                     break;
                 case SUB:
-                    op = UnaryExpr.Op.Neg;
+                    op = UnaryExpr.Op.NegOp;
                     break;
                 case INC:
                     op = UnaryExpr.Op.PreInc;
@@ -411,8 +433,8 @@ public class SyntaticAnalysis {
                     break;
             }
 
-            UnaryExpr uexpr = new UnaryExpr(previous.line,
-                 expr, op);
+            UnaryExpr uexpr = new UnaryExpr(token.line,
+                expr, op);
             expr = uexpr;
         }
 
@@ -429,10 +451,26 @@ public class SyntaticAnalysis {
             expr = procRValue();
         }
 
-        expr = procCalls(expr);
+        expr = procCalls(expr);  //mudar calls
 
-        if (match(INC, DEC)) {
-            // fazer nada
+
+        if (match(INC, DEC)) { // modificar ***
+
+            Token token = previous;
+            UnaryExpr.Op op;
+            switch (token.type) {
+                case INC:
+                    op = UnaryExpr.Op.PosInc;
+                    break;
+                default:
+                case DEC:
+                    op = UnaryExpr.Op.PosDec;
+                    break;
+
+            }
+            //throw new RuntimeException("ERRO NA EXPRESSAO");
+            UnaryExpr uexpr = new UnaryExpr(token.line, expr, op);
+            expr = uexpr;
         }
 
         return expr;
@@ -445,14 +483,16 @@ public class SyntaticAnalysis {
             Value<?> v = procConst();
             expr = new ConstExpr(previous.line, v);
         } else if (check(OPEN_BRA)) {
-            procList();
+            expr = procList();
         } else if (check(OPEN_CUR)) {
-            procObject();
+            expr = procObject();
         } else if (check(FUNCTION)) {
+
             int line = current.line;
             StandardFunction sf = procFunction();
             FunctionValue fv = new FunctionValue(sf);
             expr = new ConstExpr(line, fv);
+
         } else {
             expr = procLValue();
         }
@@ -489,39 +529,54 @@ public class SyntaticAnalysis {
     }
 
     // <list> ::= '[' [ <expr> { ',' <expr> } ] ']'
-    private void procList() {
+    private ListExpr procList() {
         eat(OPEN_BRA);
-
+        int line = previous.line;
+        ArrayList<Expr> ex = new ArrayList<Expr>();
         if (check(NOT, ADD, SUB, INC, DEC, OPEN_PAR,
                 UNDEFINED, FALSE, TRUE, NUMBER, TEXT, OPEN_BRA,
                 OPEN_CUR, FUNCTION, NAME)) {
-            procExpr();
+            ex.add(procExpr());
 
             while (match(COMMA)) {
-                procExpr();
+                ex.add(procExpr());
             }
         }
 
         eat(CLOSE_BRA);
+        return new ListExpr(line,ex);
     }
 
     // <object> ::= '{' [ <name> ':' <expr> { ',' <name> ':' <expr> } ] '}'
-    private void procObject() {
+    private ObjectExpr procObject() {
         eat(OPEN_CUR);
+        Token name;
+        Expr expr;
+        ArrayList<ObjectItem> oi = new ArrayList<>();
+        ObjectItem obj;
+        int line = previous.line;
 
         if (check(NAME)) {
-            procName();
+            name = procName();
             eat(COLON);
-            procExpr();
-
+            expr = procExpr();
+            obj = new ObjectItem();
+            obj.key = name.lexeme;
+            obj.value = expr;
+            oi.add(obj);
             while (match(COMMA)) {
-                procName();
+                name = procName();
                 eat(COLON);
-                procExpr();
+                expr = procExpr();
+                obj = new ObjectItem();
+                obj.key = name.lexeme;
+                obj.value = expr;
+                oi.add(obj);
             }
         }
-
+        ObjectExpr oe = new ObjectExpr(line, oi);
         eat(CLOSE_CUR);
+        return oe;
     }
 
     // <function> ::= function '(' ')' '{' <code> [ return <expr> ';' ] '}'
@@ -537,9 +592,9 @@ public class SyntaticAnalysis {
         StandardFunction sf = null;
         try {
             Variable params = this.environment.declare(
-                new Token("params", Token.Type.NAME, null),
-                false);
-        
+                    new Token("params", Token.Type.NAME, null),
+                    false);
+
             Command cmds = procCode();
             Expr ret = null;
             if (match(RETURN)) {
@@ -560,18 +615,22 @@ public class SyntaticAnalysis {
     private SetExpr procLValue() {
         Token name = procName();
         Variable var = this.environment.get(name);
+        SetExpr ex = var;
+         while (check(DOT, OPEN_BRA)) {
+             int line = current.line;
+             if (match(DOT)) {
+                 Token nome = procName();
+                 ConstExpr ce = new ConstExpr(line, new TextValue(nome.lexeme));
+                 ex = new AccessExpr(line ,ex, ce);
+             } else {
+                 eat(OPEN_BRA);
 
-        // while (check(DOT, OPEN_BRA)) {
-        //     if (match(DOT)) {
-        //         procName();
-        //     } else {
-        //         eat(OPEN_BRA);
-        //         procExpr();
-        //         eat(CLOSE_BRA);
-        //     }
-        // }
+                 ex = new AccessExpr(line ,ex, procExpr());
+                 eat(CLOSE_BRA);
+             }
+         }
 
-        return var;
+        return ex;
     }
 
     // <calls> ::= { '(' [ <expr> { ',' <expr> } ] ')' }
@@ -580,6 +639,7 @@ public class SyntaticAnalysis {
             int line = previous.line;
 
             List<Expr> args = new ArrayList<Expr>();
+
             if (check(NOT, ADD, SUB, INC, DEC, OPEN_PAR,
                     UNDEFINED, FALSE, TRUE, NUMBER, TEXT, OPEN_BRA,
                     OPEN_CUR, FUNCTION, NAME)) {
@@ -595,7 +655,6 @@ public class SyntaticAnalysis {
 
             expr = new FunctionCallExpr(line, expr, args);
         }
-        
         return expr;
     }
 

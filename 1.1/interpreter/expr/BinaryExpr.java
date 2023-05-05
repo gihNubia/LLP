@@ -2,6 +2,7 @@ package interpreter.expr;
 
 import interpreter.value.BoolValue;
 import interpreter.value.NumberValue;
+import interpreter.value.TextValue;
 import interpreter.value.Value;
 
 public class BinaryExpr extends Expr {
@@ -129,13 +130,20 @@ public class BinaryExpr extends Expr {
 
         return new BoolValue(d1 >= d2);
     }
-    private Value<?> addOp(Value<?> v1, Value<?> v2) { // falta revisar -- lembrar outros casos
-        //exemplo  --> "12" + "12" = "1212" ??? 24
-        //exemplo2 --> "12" + "a" = "12a"
-        double d1 = NumberValue.convert(v1);
-        double d2 = NumberValue.convert(v2);
+    private Value<?> addOp(Value<?> v1, Value<?> v2) {
 
-        return new NumberValue(d1 + d2);
+        if((v1 instanceof NumberValue) && (v2 instanceof NumberValue)){
+            double d1 = NumberValue.convert(v1);
+            double d2 = NumberValue.convert(v2);
+
+            return new NumberValue(d1 + d2);
+        }
+
+        String d1 = TextValue.convert(v1);
+        String d2 = TextValue.convert(v2);
+
+        return new TextValue(d1 + d2);
+
     }
     private Value<?> subOp(Value<?> v1, Value<?> v2) {
         double d1 = NumberValue.convert(v1);

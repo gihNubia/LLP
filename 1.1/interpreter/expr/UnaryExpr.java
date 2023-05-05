@@ -64,19 +64,27 @@ public class UnaryExpr extends Expr {
     }
 
     private Value<?> preIncOp(Value<?> v) {
-        throw new RuntimeException("implement me!");
+        double d = NumberValue.convert(v);
+        ((SetExpr) this.expr).setValue(new NumberValue(d + 1));
+        return new NumberValue(d + 1);
     }
 
     private Value<?> posIncOp(Value<?> v) {
-        throw new RuntimeException("implement me!");
+        double d = NumberValue.convert(v);
+        ((SetExpr) this.expr).setValue(new NumberValue(d + 1));
+        return new NumberValue(d);
     }
 
     private Value<?> preDecOp(Value<?> v) {
-        throw new RuntimeException("implement me!");
+        double d = NumberValue.convert(v);
+        ((SetExpr) this.expr).setValue(new NumberValue(d - 1));
+        return new NumberValue(d - 1);
     }
 
     private Value<?> posDecOp(Value<?> v) {
-        throw new RuntimeException("implement me!");
+        double d = NumberValue.convert(v);
+        ((SetExpr) this.expr).setValue(new NumberValue(d - 1));
+        return new NumberValue(d);
     }
 
 }

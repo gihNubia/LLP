@@ -11,6 +11,9 @@ import interpreter.function.NativeFunction;
 import interpreter.function.NativeOp;
 import interpreter.value.FunctionValue;
 
+import interpreter.value.*;
+import lexical.*;
+
 import java.util.HashMap;
 import java.util.Map;
 

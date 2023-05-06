@@ -7,13 +7,22 @@ import interpreter.command.Command;
 import interpreter.expr.ConstExpr;
 import interpreter.expr.Expr;
 import interpreter.expr.Variable;
+<<<<<<< HEAD
 import interpreter.function.NativeFunction;
 import interpreter.function.NativeOp;
 import interpreter.value.FunctionValue;
+=======
+>>>>>>> refs/remotes/origin/main
 import interpreter.value.ObjectValue;
 import interpreter.value.TextValue;
 import interpreter.value.Value;
 import lexical.Token;
+<<<<<<< HEAD
+=======
+
+import java.util.HashMap;
+import java.util.Map;
+>>>>>>> refs/remotes/origin/main
 
 public class Interpreter {
 
@@ -21,6 +30,7 @@ public class Interpreter {
 
     static {
         globals = new Environment();
+<<<<<<< HEAD
 
         Map<TextValue, Value<?>> mp = new HashMap<TextValue, Value<?>>();
 
@@ -60,9 +70,16 @@ public class Interpreter {
             new Token("console", Token.Type.NAME, null),
             false);
         console.setValue(ov);
+=======
+        //Variable console = globals.declare(new Token("console", Token.Type.NAME,new TextValue("console")), false);
+        //Map<TextValue, Value<?>> mp = new HashMap<>();
+        //mp.put()
+        //ObjectValue obj = new ObjectValue();
+>>>>>>> refs/remotes/origin/main
     }
 
     private Interpreter() {
+
     }
 
     public static void interpret(Command cmd) {

@@ -1,2 +1,2 @@
-MiniJs
+MiniJs - 
 Erick Rocha & Gisele Núbia

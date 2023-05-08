@@ -1,5 +1,4 @@
-console.log("Um numero aleatorio ", console.random());
+console.log("Digite um numero: ");
+let n = console.read();
 
-let a = console.read();
-
-console.log("Por acaso alguem disse " + a + "?");
+console.log(n == 10 ? "Esse numero eh dez" : "Esse numero nao eh dez");

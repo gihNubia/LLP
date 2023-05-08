@@ -277,9 +277,12 @@ public class SyntaticAnalysis {
         Expr expr = procCond();
 
         if(match(TERNARY)){
-            procExpr();
+            int line = previous.line;
+            Expr trueExpr = procExpr();
             eat(COLON);
-            procExpr();
+            Expr falseExpr = procExpr();
+
+            expr = new ConditionalExpr(line, expr, trueExpr, falseExpr);
         }
 
         return expr;

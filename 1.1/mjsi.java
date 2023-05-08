@@ -1,3 +1,4 @@
+//Grupo: Erick Rocha e Gisele Oliveira
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -25,7 +26,7 @@ public class mjsi {
             }
         } catch (Exception e) {
             System.err.println("Internal error: " + e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 
@@ -68,7 +69,7 @@ public class mjsi {
             Interpreter.interpret(cmd);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

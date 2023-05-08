@@ -1,4 +1,10 @@
-console.log("Digite um numero: ");
-let n = console.read();
+let lado = console.read();
+let area = lado*lado;
 
-console.log(n == 10 ? "Esse numero eh dez" : "Esse numero nao eh dez");
+if(lado<=0){
+    console.log("insira um valor valido");
+} else if(area>= 20) {
+   console.log("voce tem um quadradaoo!!!!! de espetaculares " + area + "de area");
+} else {
+    console.log("voce tem um quadradinhooo!! de apenas " + area + "de area");
+}

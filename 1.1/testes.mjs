@@ -46,6 +46,9 @@ cachorro.latir = function() {console.log("auuuu");};
 // auuuu
 print_cachorro(cachorro);
 
+// undefined ~ null
+console.log(cachorro.tamanho);
+
 let cria_lista_aleatoria = function(){
     let i = 0;
     let list = [];
@@ -82,3 +85,12 @@ let listas = [
 for (let lista in listas){
     console.log(calcula_media(lista));
 }
+
+// undefined ~ null
+console.log(listas[0][1]);
+
+// true
+console.log("ab" == "ab");
+
+// false
+console.log("ab" == "a");

@@ -95,16 +95,10 @@ public class BinaryExpr extends Expr {
         return new BoolValue(d1 || d2);
     }
     private Value<?> equalOp(Value<?> v1, Value<?> v2) {
-        double d1 = NumberValue.convert(v1);
-        double d2 = NumberValue.convert(v2);
-
-        return new BoolValue(d1 == d2);
+        return new BoolValue(v1.equals(v2));
     }
     private Value<?> notEqualOp(Value<?> v1, Value<?> v2) {
-        double d1 = NumberValue.convert(v1);
-        double d2 = NumberValue.convert(v2);
-
-        return new BoolValue(d1 != d2);
+        return new BoolValue(!v1.equals(v2));
     }
     private Value<?> lowerThanOp(Value<?> v1, Value<?> v2) {
         double d1 = NumberValue.convert(v1);

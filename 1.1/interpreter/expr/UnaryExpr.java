@@ -1,5 +1,6 @@
 package interpreter.expr;
 
+import interpreter.InterpreterException;
 import interpreter.value.BoolValue;
 import interpreter.value.NumberValue;
 import interpreter.value.Value;
@@ -65,26 +66,43 @@ public class UnaryExpr extends Expr {
 
     private Value<?> preIncOp(Value<?> v) {
         double d = NumberValue.convert(v);
-        ((SetExpr) this.expr).setValue(new NumberValue(d + 1));
-        return new NumberValue(d + 1);
+        if (this.expr instanceof SetExpr){
+            ((SetExpr) this.expr).setValue(new NumberValue(d + 1));
+            return new NumberValue(d + 1);
+        } else {
+            throw new InterpreterException(getLine());
+        }
     }
 
     private Value<?> posIncOp(Value<?> v) {
         double d = NumberValue.convert(v);
-        ((SetExpr) this.expr).setValue(new NumberValue(d + 1));
-        return new NumberValue(d);
+
+        if (this.expr instanceof SetExpr){
+            ((SetExpr) this.expr).setValue(new NumberValue(d + 1));
+            return new NumberValue(d);
+        } else {
+            throw new InterpreterException(getLine());
+        }
     }
 
     private Value<?> preDecOp(Value<?> v) {
         double d = NumberValue.convert(v);
-        ((SetExpr) this.expr).setValue(new NumberValue(d - 1));
-        return new NumberValue(d - 1);
+        if (this.expr instanceof SetExpr){
+            ((SetExpr) this.expr).setValue(new NumberValue(d - 1));
+            return new NumberValue(d - 1);
+        } else {
+            throw new InterpreterException(getLine());
+        }
     }
 
     private Value<?> posDecOp(Value<?> v) {
         double d = NumberValue.convert(v);
-        ((SetExpr) this.expr).setValue(new NumberValue(d - 1));
-        return new NumberValue(d);
+        if (this.expr instanceof SetExpr){
+            ((SetExpr) this.expr).setValue(new NumberValue(d - 1));
+            return new NumberValue(d);
+        } else {
+            throw new InterpreterException(getLine());
+        }
     }
 
 }

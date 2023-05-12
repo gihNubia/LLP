@@ -29,7 +29,11 @@ public class AccessExpr extends SetExpr{
             ListValue b = (ListValue) v;
             if(i instanceof NumberValue){
                 double num = ((NumberValue) i).value();
-                if(num < b.value().size()){
+
+                if (num < 0){
+                    throw new InterpreterException(getLine());
+                }
+                else if(num < b.value().size()){
                     return b.value().get((int)num);
                 }
                 else{
@@ -61,13 +65,15 @@ public class AccessExpr extends SetExpr{
             ListValue b = (ListValue) v;
             if(i instanceof NumberValue){
                 double num = NumberValue.convert(i);
+                if (num < 0){
+                    throw new InterpreterException(getLine());
+                }
+                
                 List<Value<?>> al = b.value();
                     while(al.size() <= num){
                         al.add(null);
                     }
                     b.value().set((int)num, value);
-
-
             }
             else{
                 throw new InterpreterException(getLine());

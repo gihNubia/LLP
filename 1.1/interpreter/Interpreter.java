@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import interpreter.command.Command;
-import interpreter.expr.ConstExpr;
 import interpreter.expr.Expr;
 import interpreter.expr.Variable;
 import interpreter.function.NativeFunction;
@@ -14,8 +13,6 @@ import interpreter.value.FunctionValue;
 import interpreter.value.*;
 import lexical.*;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class Interpreter {
 

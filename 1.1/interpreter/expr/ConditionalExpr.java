@@ -1,7 +1,5 @@
 package interpreter.expr;
 
-import javax.management.RuntimeErrorException;
-
 import interpreter.value.BoolValue;
 import interpreter.value.Value;
 

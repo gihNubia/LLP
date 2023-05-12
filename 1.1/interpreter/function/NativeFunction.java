@@ -4,8 +4,6 @@ import interpreter.value.ListValue;
 import interpreter.value.NumberValue;
 import interpreter.value.TextValue;
 import interpreter.value.Value;
-
-import java.lang.annotation.Native;
 import java.util.Random;
 import java.util.Scanner;
 

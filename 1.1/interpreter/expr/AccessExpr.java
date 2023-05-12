@@ -2,9 +2,6 @@ package interpreter.expr;
 
 import interpreter.InterpreterException;
 import interpreter.value.*;
-
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AccessExpr extends SetExpr{

@@ -2,12 +2,10 @@ package interpreter.command;
 
 import interpreter.InterpreterException;
 import interpreter.expr.Expr;
-import interpreter.expr.ListExpr;
 import interpreter.expr.Variable;
 import interpreter.value.ListValue;
 import interpreter.value.Value;
 
-import java.util.List;
 
 public class ForCommand extends Command{
     private Expr expr;

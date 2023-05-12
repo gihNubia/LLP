@@ -101,5 +101,10 @@ x["louco"] = 3;
 x[false] = 4;
 x[10] = 5;
 
-// {oi: 1, mundo: 2, louco: 3, false: 4, 10: 5}
-console.log(x);
+for (let i in x) {
+    console.log(i + ": " + x[i]);
+}
+
+for (let j in [1, 2, 3, 4]){
+    console.log(j);
+}

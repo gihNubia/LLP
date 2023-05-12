@@ -1,9 +1,13 @@
 package interpreter.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import interpreter.InterpreterException;
 import interpreter.expr.Expr;
 import interpreter.expr.Variable;
 import interpreter.value.ListValue;
+import interpreter.value.ObjectValue;
 import interpreter.value.Value;
 
 
@@ -22,20 +26,22 @@ public class ForCommand extends Command{
     }
 
     public void execute(){
-        //for (<var> in <expr> ) <cmds>
-        try{
-            ListValue v = (ListValue) expr.expr();
-            for(Value<?> vl : v.value()){
-                var.setValue(vl);
-                cmds.execute();
-            }
+        Value<?> v = expr.expr();
+        List<Value<?>> values = null;
+
+        if (v instanceof ListValue){
+            values = ((ListValue)v).value();
         }
-        catch (Exception e){
+        else if (v instanceof ObjectValue){
+            values = new ArrayList<Value<?>>(((ObjectValue)v).value().keySet());
+        }
+        else {
             throw new InterpreterException(getLine());
         }
 
-
-
-
+        for (Value<?> vl : values){
+            var.setValue(vl);
+            cmds.execute();
+        }
     }
 }

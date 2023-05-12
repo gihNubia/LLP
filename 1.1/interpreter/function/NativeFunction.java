@@ -21,7 +21,10 @@ public class NativeFunction extends Function{
         switch (op){
             case Log:
                 for(Value<?> x : ((ListValue) getParams().expr()).value()){
-                    System.out.print(x);
+                    if (x == null)
+                        System.out.print("undefined");
+                    else
+                        System.out.print(x);
                 }
                 System.out.println();
                 return null;

@@ -101,10 +101,18 @@ x["louco"] = 3;
 x[false] = 4;
 x[10] = 5;
 
+// itera pelas chaves de x
 for (let i in x) {
     console.log(i + ": " + x[i]);
 }
 
+// 1
+// 2
+// 3
+// 4
 for (let j in [1, 2, 3, 4]){
     console.log(j);
 }
+
+// comentarios no final do arquivo...
+// ...nao causam problemas

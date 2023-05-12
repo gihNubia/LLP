@@ -142,18 +142,21 @@ public class BinaryExpr extends Expr {
     private Value<?> subOp(Value<?> v1, Value<?> v2) {
         double d1 = NumberValue.convert(v1);
         double d2 = NumberValue.convert(v2);
+
         return new NumberValue(d1 - d2);
     }
 
     private Value<?> mulOp(Value<?> v1, Value<?> v2) {
         double d1 = NumberValue.convert(v1);
         double d2 = NumberValue.convert(v2);
+
         return new NumberValue(d1 * d2);
     }
 
     private Value<?> divOp(Value<?> v1, Value<?> v2) {
         double d1 = NumberValue.convert(v1);
         double d2 = NumberValue.convert(v2);
+        
         return new NumberValue(d1 / d2);
     }
 }

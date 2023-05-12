@@ -5,7 +5,6 @@ import interpreter.value.BoolValue;
 import interpreter.value.Value;
 
 public class IfCommand extends Command{
-    //iif e else
     private Expr expr;
 
     private Command thenCmds;

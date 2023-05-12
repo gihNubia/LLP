@@ -16,22 +16,21 @@ public class AccessExpr extends SetExpr{
     }
 
 
-
-
     public Value<?> expr(){
-        Value<?> v = base.expr();
+        Value<?> b = base.expr();
         Value<?> i = index.expr();
 
-        if(v instanceof ListValue){
-            ListValue b = (ListValue) v;
+        if(b instanceof ListValue){
+            ListValue blv = (ListValue) b;
             if(i instanceof NumberValue){
                 double num = ((NumberValue) i).value();
 
                 if (num < 0){
                     throw new InterpreterException(getLine());
                 }
-                else if(num < b.value().size()){
-                    return b.value().get((int)num);
+                
+                if(num < blv.value().size()){
+                    return blv.value().get((int)num);
                 }
                 else{
                     return null;
@@ -41,11 +40,11 @@ public class AccessExpr extends SetExpr{
                 throw new InterpreterException(getLine());
             }
         }
-        else if(v instanceof ObjectValue){
-            ObjectValue b = (ObjectValue) v;
+        else if(b instanceof ObjectValue){
+            ObjectValue bov = (ObjectValue) b;
             String s = TextValue.convert(i);
 
-            return b.value().get(new TextValue(s));
+            return bov.value().get(new TextValue(s));
         }
         else{
             throw new InterpreterException(getLine());
@@ -53,35 +52,34 @@ public class AccessExpr extends SetExpr{
     }
 
     public void setValue(Value<?> value){
-        // x[i] = value;
-        //x["b"]
-        //x.b
-        Value<?> v = base.expr();
+        Value<?> b = base.expr();
         Value<?> i = index.expr();
-        if(v instanceof ListValue){
-            ListValue b = (ListValue) v;
+
+        if(b instanceof ListValue){
+            ListValue blv = (ListValue) b;
             if(i instanceof NumberValue){
                 double num = NumberValue.convert(i);
+
                 if (num < 0){
                     throw new InterpreterException(getLine());
                 }
                 
-                List<Value<?>> al = b.value();
-                    while(al.size() <= num){
-                        al.add(null);
-                    }
-                    b.value().set((int)num, value);
+                List<Value<?>> al = blv.value();
+                while(al.size() <= num){
+                    al.add(null);
+                }
+                blv.value().set((int)num, value);
             }
             else{
                 throw new InterpreterException(getLine());
             }
 
         }
-        else if(v instanceof ObjectValue){
-            ObjectValue b = (ObjectValue) v;
+        else if(b instanceof ObjectValue){
+            ObjectValue bov = (ObjectValue) b;
             String s = TextValue.convert(i);
 
-            b.value().put(new TextValue(s), value);
+            bov.value().put(new TextValue(s), value);
         }
         else{
             throw new InterpreterException(getLine());

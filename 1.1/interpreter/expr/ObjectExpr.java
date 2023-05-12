@@ -16,7 +16,6 @@ public class ObjectExpr extends Expr{
     }
 
     public Value<?> expr(){
-        //{"ba": 1, "bd": "123", "ac" = 2i + 1}
         Map<TextValue, Value<?>> mapa = new HashMap<TextValue, Value<?>>();
 
         for (ObjectItem obj : items){

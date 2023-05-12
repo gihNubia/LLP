@@ -94,3 +94,12 @@ console.log("ab" == "ab");
 
 // false
 console.log("ab" == "a");
+
+let x = {oi: 1};
+x.mundo = 2;
+x["louco"] = 3;
+x[false] = 4;
+x[10] = 5;
+
+// {oi: 1, mundo: 2, louco: 3, false: 4, 10: 5}
+console.log(x);

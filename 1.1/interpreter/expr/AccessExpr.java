@@ -24,6 +24,7 @@ public class AccessExpr extends SetExpr{
     public Value<?> expr(){
         Value<?> v = base.expr();
         Value<?> i = index.expr();
+
         if(v instanceof ListValue){
             ListValue b = (ListValue) v;
             if(i instanceof NumberValue){
@@ -38,22 +39,16 @@ public class AccessExpr extends SetExpr{
             else{
                 throw new InterpreterException(getLine());
             }
-
         }
-        if(v instanceof ObjectValue){
+        else if(v instanceof ObjectValue){
             ObjectValue b = (ObjectValue) v;
-            if(i instanceof TextValue){
-                return b.value().get((TextValue) i);
-            }
-            else{
-                throw new InterpreterException(getLine());
-            }
+            String s = TextValue.convert(i);
 
+            return b.value().get(new TextValue(s));
         }
         else{
             throw new InterpreterException(getLine());
         }
-
     }
 
     public void setValue(Value<?> value){
@@ -81,17 +76,12 @@ public class AccessExpr extends SetExpr{
         }
         else if(v instanceof ObjectValue){
             ObjectValue b = (ObjectValue) v;
-            if(i instanceof TextValue){
-                b.value().put((TextValue) i, value);
-                v = b;
-            }
-            else{
-                throw new InterpreterException(getLine());
-            }
+            String s = TextValue.convert(i);
+
+            b.value().put(new TextValue(s), value);
         }
         else{
             throw new InterpreterException(getLine());
         }
-
     }
 }
